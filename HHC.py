@@ -4,11 +4,12 @@ import matplotlib.pyplot as plt
 
 
 def select_relevant_features(data):
-    with open("column_names.txt", "r") as file:
-        for name in file.readlines():
-            if name.split()[0] == "Footnote":
-                column_name_to_drop = name.strip()
-                data = data.drop(column_name_to_drop, axis=1)
+    columns_to_drop = ['Provider Name', 'CMS Certification Number (CCN)', 'Address', 'ZIP Code', 'Telephone Number',
+                       'Certification Date', 'DTC Performance Categorization', 'PPR Performance Categorization']
+    with open("initial_column_names.txt", "r") as file:
+        file_column_names = [line.strip() for line in file.readlines()]
+    columns_to_drop.extend([name for name in file_column_names if name.startswith("Footnote")])
+    data = data.drop(columns=columns_to_drop, errors='ignore')
     return data
 
 
@@ -41,7 +42,7 @@ def read_csv():
         column_names = first_line.split(',')
     column_names = [name.replace("'", '').replace('`', '').replace('"', '') for name in column_names]
     '''
-    with open("column_names.txt", 'w') as file:
+    with open("initial_column_names.txt", 'w') as file:
        for name in column_names:
             file.write(name + '\n')
     '''
@@ -50,16 +51,16 @@ def read_csv():
     return data
 
 
-def delete_rows_with_most_common_answer(data):
-    dash_counts = (data == "-").sum(axis=1)
-    rows_to_delete = dash_counts > (data.shape[1] / 2)
-    filtered_data = data[~rows_to_delete]
+def delete_rows_with_missing_categoric_value(data):
+    categoric_columns = ['Type of Ownership', 'PPH Performance Categorization', 'State', 'City/Town']
+    missing_values = data[categoric_columns].eq("-").any(axis=1)
+    filtered_data = data[~missing_values]
     return filtered_data
 
 
 def compute_median_value_for_column(data, column_name):
     numerical_values = pd.to_numeric(data[column_name], errors='coerce')
-    numerical_values = numerical_values[~np.isnan(numerical_values) & (numerical_values != '-')]
+    numerical_values = numerical_values[~np.isnan(numerical_values)]
     if not np.isnan(numerical_values).all():
         median_value = np.median(numerical_values)
         return median_value
@@ -70,7 +71,11 @@ def compute_median_value_for_column(data, column_name):
 def complete_data_with_median(data):
     for column_name in data.columns:
         if "-" in data[column_name].values:
-            median_value = compute_median_value_for_column(data, column_name)
+            if column_name == 'Quality of patient care star rating':
+                selected_rows = data[data['State'].str.lower() == data[column_name].str.lower()]
+                median_value = compute_median_value_for_column(selected_rows, column_name)
+            else:
+                median_value = compute_median_value_for_column(data, column_name)
             data[column_name] = data[column_name].replace("-", median_value)
     return data
 
@@ -89,14 +94,14 @@ def normalize_data_custom(data):
 def preprocessing():
     data = read_csv()
     data = select_relevant_features(data)
-    data = delete_rows_with_most_common_answer(data)
+    data = delete_rows_with_missing_categoric_value(data)
     data = complete_data_with_median(data)
-    data_encoded = pd.get_dummies(data, columns=['State', 'City/Town', 'Type of Ownership',
-                                                 'DTC Performance Categorization', 'PPR Performance Categorization',
-                                                 'PPH Performance Categorization'])
+
+    data_encoded = pd.get_dummies(data, columns=['Type of Ownership', 'PPH Performance Categorization']) #one-hot
+
     data_normalized = normalize_booleans(data_encoded)
-    data_normalized = encode_columns_to_numeric(data_normalized, columns=['Provider Name', 'Address',
-                                                                          'Certification Date'])
+    data_normalized = encode_columns_to_numeric(data_normalized, columns=['State', 'City/Town']) #dictionary
+
     data_normalized = normalize_data_custom(data_normalized)
     data_normalized.to_csv("output_file.csv", index=False)
     return data_normalized, data_encoded
@@ -128,9 +133,15 @@ def data_analysis(data):
 
 
 if __name__ == '__main__':
-    preprocessed_data, data = preprocessing()
-    # data_analysis(data)
-    # print(type(preprocessed_data))
-    # df = pd.DataFrame(data)
-    # print(df.columns)
+    preprocessed_data = preprocessing()
 
+    '''
+    final_column_names = preprocessed_data.columns.tolist()
+    # Append the column names to the file
+    with open("final_column_names.txt", "a") as file:
+        for column_name in final_column_names:
+            file.write(column_name + '\n')
+            '''
+
+    print(preprocessed_data)
+    #data_analysis(preprocessed_data)

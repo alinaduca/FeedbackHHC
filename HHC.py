@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+states_rating = {}
+
 
 def select_relevant_features(data):
     columns_to_drop = ['Provider Name', 'CMS Certification Number (CCN)', 'Address', 'ZIP Code', 'Telephone Number',
@@ -11,6 +13,27 @@ def select_relevant_features(data):
     columns_to_drop.extend([name for name in file_column_names if name.startswith("Footnote")])
     data = data.drop(columns=columns_to_drop, errors='ignore')
     return data
+
+
+def custom_round(value):
+    integer_part = int(value)
+    decimal_part = value - integer_part
+    if decimal_part < 0.25:
+        return integer_part
+    elif decimal_part < 0.75:
+        return integer_part + 0.5
+    else:
+        return integer_part + 1
+
+
+def calculate_rating_per_states(data):
+    states = data['State'].values
+    for state in set(states):
+        selected_rows = data[data['State'] == state]
+        numerical_values = pd.to_numeric(selected_rows['Quality of patient care star rating'], errors='coerce')
+        numerical_values = numerical_values[~np.isnan(numerical_values)]
+        mean_value = np.mean(numerical_values)
+        states_rating[state] = mean_value
 
 
 def encode_columns_to_numeric(data, columns):
@@ -52,31 +75,41 @@ def read_csv():
 
 
 def delete_rows_with_missing_categoric_value(data):
-    categoric_columns = ['Type of Ownership', 'PPH Performance Categorization', 'State', 'City/Town']
-    missing_values = data[categoric_columns].eq("-").any(axis=1)
+    categorical_columns = ['Type of Ownership', 'PPH Performance Categorization', 'State', 'City/Town']
+    missing_values = data[categorical_columns].eq("-").any(axis=1)
     filtered_data = data[~missing_values]
     return filtered_data
 
 
-def compute_median_value_for_column(data, column_name):
+def compute_mean_value_for_column(data, column_name):
     numerical_values = pd.to_numeric(data[column_name], errors='coerce')
     numerical_values = numerical_values[~np.isnan(numerical_values)]
     if not np.isnan(numerical_values).all():
-        median_value = np.median(numerical_values)
-        return median_value
+        mean_value = np.mean(numerical_values)
+        return mean_value
     else:
         return np.nan
 
 
-def complete_data_with_median(data):
+def replace_missing_rating(row):
+    if row['Quality of patient care star rating'] == '-':
+        return states_rating.get(row['State'])
+    else:
+        return row['Quality of patient care star rating']
+
+
+def complete_data_with_mean(data):
     for column_name in data.columns:
         if "-" in data[column_name].values:
             if column_name == 'Quality of patient care star rating':
-                selected_rows = data[data['State'].str.lower() == data[column_name].str.lower()]
-                median_value = compute_median_value_for_column(selected_rows, column_name)
+                indexes = data[data[column_name] == "-"].index.values
+                for index in indexes:
+                    data.at[index, 'Quality of patient care star rating'] = custom_round(states_rating[data['State'][index]])
+                # selected_rows = data[data['State'].str.lower() == data[column_name].str.lower()]
+                # mean_value = compute_mean_value_for_column(selected_rows, column_name)
             else:
-                median_value = compute_median_value_for_column(data, column_name)
-            data[column_name] = data[column_name].replace("-", median_value)
+                mean_value = compute_mean_value_for_column(data, column_name)
+                data[column_name] = data[column_name].replace("-", mean_value)
     return data
 
 
@@ -95,21 +128,21 @@ def preprocessing():
     data = read_csv()
     data = select_relevant_features(data)
     data = delete_rows_with_missing_categoric_value(data)
-    data = complete_data_with_median(data)
+    calculate_rating_per_states(data)
+    data = complete_data_with_mean(data)
 
-    data_encoded = pd.get_dummies(data, columns=['Type of Ownership', 'PPH Performance Categorization']) #one-hot
-
+    data_encoded = pd.get_dummies(data, columns=['Type of Ownership', 'PPH Performance Categorization'])  # one-hot
+    # data_encoded.to_csv("data_before_normalization.csv", index=False)
     data_normalized = normalize_booleans(data_encoded)
-    data_normalized = encode_columns_to_numeric(data_normalized, columns=['State', 'City/Town']) #dictionary
-
+    data_normalized = encode_columns_to_numeric(data_normalized, columns=['State', 'City/Town'])  # dictionary
     data_normalized = normalize_data_custom(data_normalized)
     data_normalized.to_csv("output_file.csv", index=False)
-    return data_normalized, data_encoded
+    return data_normalized
 
 
 def data_analysis(data):
     df = pd.DataFrame(data)
-    selected_columns = df.columns[12:46]
+    selected_columns = df.columns[8:42]
     mean_values = df[selected_columns].mean()
     median_values = df[selected_columns].median()
     summary_df = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
@@ -118,18 +151,21 @@ def data_analysis(data):
     plt.savefig('means_and_medians.png')
     plt.clf()
     columns_len = len(df.columns)
-    print(df.columns[columns_len-19:columns_len])
-    selected_columns = df.columns[columns_len-19:columns_len]
-    min_values = df[selected_columns].min()
+    selected_columns = df.columns[columns_len-11:columns_len]
     mean_values = df[selected_columns].mean()
     median_values = df[selected_columns].median()
-    max_values = df[selected_columns].max()
-    summary_df = pd.DataFrame({'Minimum': min_values, 'Mean': mean_values, 'Median': median_values,
-                               'Maximum': max_values})
+    summary_df = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
     summary_df.plot(kind='bar')
-    plt.title('Minimum, mean, median and maximum values for categorical parameters')
-    plt.savefig('min_mean_median_max.png')
+    plt.title('Mean and median values for categorical parameters')
+    plt.savefig('mean_median_categorical.png')
     plt.clf()
+    categories = list(states_rating.keys())
+    values = list(states_rating.values())
+    plt.bar(categories, values, color='blue')
+    plt.xlabel('Categories')
+    plt.ylabel('Values')
+    plt.title('Histogram')
+    plt.savefig('ratings.png')
 
 
 if __name__ == '__main__':
@@ -141,7 +177,6 @@ if __name__ == '__main__':
     with open("final_column_names.txt", "a") as file:
         for column_name in final_column_names:
             file.write(column_name + '\n')
-            '''
+    '''
 
-    print(preprocessed_data)
-    #data_analysis(preprocessed_data)
+    data_analysis(preprocessed_data)

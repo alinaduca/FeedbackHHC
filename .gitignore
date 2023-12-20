@@ -1,4 +1,6 @@
 .idea
+ratings.png
 output_file.csv
 means_and_medians.png
-min_mean_median_max.png
+mean_median_categorical.png
+data_before_normalization.csv

@@ -99,7 +99,7 @@ def preprocessing():
                                                                           'Certification Date'])
     data_normalized = normalize_data_custom(data_normalized)
     data_normalized.to_csv("output_file.csv", index=False)
-    return data_normalized
+    return data_normalized, data_encoded
 
 
 def data_analysis(data):
@@ -111,8 +111,26 @@ def data_analysis(data):
     summary_df.plot(kind='bar')
     plt.title('Mean and median values')
     plt.savefig('means_and_medians.png')
+    plt.clf()
+    columns_len = len(df.columns)
+    print(df.columns[columns_len-19:columns_len])
+    selected_columns = df.columns[columns_len-19:columns_len]
+    min_values = df[selected_columns].min()
+    mean_values = df[selected_columns].mean()
+    median_values = df[selected_columns].median()
+    max_values = df[selected_columns].max()
+    summary_df = pd.DataFrame({'Minimum': min_values, 'Mean': mean_values, 'Median': median_values,
+                               'Maximum': max_values})
+    summary_df.plot(kind='bar')
+    plt.title('Minimum, mean, median and maximum values for categorical parameters')
+    plt.savefig('min_mean_median_max.png')
+    plt.clf()
 
 
 if __name__ == '__main__':
-    preprocessed_data = preprocessing()
-    data_analysis(preprocessed_data)
+    preprocessed_data, data = preprocessing()
+    # data_analysis(data)
+    # print(type(preprocessed_data))
+    # df = pd.DataFrame(data)
+    # print(df.columns)
+

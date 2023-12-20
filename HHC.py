@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 def select_relevant_features(data):
@@ -43,7 +44,7 @@ def read_csv():
     with open("column_names.txt", 'w') as file:
        for name in column_names:
             file.write(name + '\n')
-            '''
+    '''
     data = pd.read_csv(file_path, names=column_names, skiprows=1)
     data.replace(',', '', regex=True, inplace=True)
     return data
@@ -77,14 +78,11 @@ def complete_data_with_median(data):
 def normalize_data_custom(data):
     normalized_data = data.copy()
     normalized_data = normalized_data.apply(pd.to_numeric, errors='ignore')
-
     for column in normalized_data.select_dtypes(include=['number']).columns:
         min_val = normalized_data[column].min()
         max_val = normalized_data[column].max()
-
         if min_val != max_val:
             normalized_data[column] = (normalized_data[column] - min_val) / (max_val - min_val)
-
     return normalized_data
 
 
@@ -93,17 +91,28 @@ def preprocessing():
     data = select_relevant_features(data)
     data = delete_rows_with_most_common_answer(data)
     data = complete_data_with_median(data)
-
-    data_encoded = pd.get_dummies(data, columns=['State', 'City/Town', 'Type of Ownership', 'DTC Performance Categorization', 'PPR Performance Categorization', 'PPH Performance Categorization'])
-
+    data_encoded = pd.get_dummies(data, columns=['State', 'City/Town', 'Type of Ownership',
+                                                 'DTC Performance Categorization', 'PPR Performance Categorization',
+                                                 'PPH Performance Categorization'])
     data_normalized = normalize_booleans(data_encoded)
-    data_normalized = encode_columns_to_numeric(data_normalized, columns=['Provider Name', 'Address', 'Certification Date'])
+    data_normalized = encode_columns_to_numeric(data_normalized, columns=['Provider Name', 'Address',
+                                                                          'Certification Date'])
     data_normalized = normalize_data_custom(data_normalized)
-
     data_normalized.to_csv("output_file.csv", index=False)
     return data_normalized
-    # print(data_normalized)
+
+
+def data_analysis(data):
+    df = pd.DataFrame(data)
+    selected_columns = df.columns[12:46]
+    mean_values = df[selected_columns].mean()
+    median_values = df[selected_columns].median()
+    summary_df = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
+    summary_df.plot(kind='bar')
+    plt.title('Mean and median values')
+    plt.savefig('means_and_medians.png')
 
 
 if __name__ == '__main__':
-    prepocessed_data = preprocessing()
+    preprocessed_data = preprocessing()
+    data_analysis(preprocessed_data)

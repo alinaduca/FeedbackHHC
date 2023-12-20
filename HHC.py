@@ -94,16 +94,20 @@ def preprocessing():
     data = delete_rows_with_most_common_answer(data)
     data = complete_data_with_median(data)
 
-    data_encoded = pd.get_dummies(data, columns=['State', 'City/Town', 'Type of Ownership', 'DTC Performance Categorization', 'PPR Performance Categorization', 'PPH Performance Categorization'])
+    data_encoded = pd.get_dummies(data,
+                                  columns=['Type of Ownership', 'DTC Performance Categorization',
+                                           'PPR Performance Categorization', 'PPH Performance Categorization'])
 
     data_normalized = normalize_booleans(data_encoded)
-    data_normalized = encode_columns_to_numeric(data_normalized, columns=['Provider Name', 'Address', 'Certification Date'])
+    data_normalized = encode_columns_to_numeric(data_normalized,
+                                                columns=['State', 'City/Town', 'Provider Name', 'Address', 'Certification Date'])
     data_normalized = normalize_data_custom(data_normalized)
 
     data_normalized.to_csv("output_file.csv", index=False)
     return data_normalized
-    # print(data_normalized)
+    #print(data_normalized)
 
 
 if __name__ == '__main__':
     prepocessed_data = preprocessing()
+    print(prepocessed_data)

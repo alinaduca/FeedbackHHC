@@ -88,10 +88,8 @@ plt.clf()
 
 
 cols = []
+values = []
 ponderi = theta
-theta = []
-for pond in ponderi:
-    theta.append(pond)
 while len(cols) < len(ponderi):
     maxx = -inf
     index = -1
@@ -100,8 +98,15 @@ while len(cols) < len(ponderi):
             maxx = val[0]
             index = ind
     ponderi[index][0] = -inf
+    values.append(maxx)
     cols.append(data.columns[index])
 
 
 for index, column_name in enumerate(cols):
     print(index + 1, ". ", column_name, sep='')
+
+plt.clf()
+plt.bar(cols, values, color='blue')
+plt.xlabel('Features')
+plt.ylabel('Weights')
+plt.savefig('features.png')

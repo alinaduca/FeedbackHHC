@@ -61,9 +61,9 @@ def gradient_descent(X, y, theta, alpha, num_iterations):
         print(y)
         theta -= alpha * np.dot(X.T, (sigmoid(np.dot(X, theta)) - y))
         w_y.append(iteration + 1)
-        w_0.append(theta[0, 0])
-        w_1.append(theta[1, 0])
-        w_2.append(theta[2, 0])
+        w_0.append(theta[15, 0])
+        w_1.append(theta[11, 0])
+        w_2.append(theta[6, 0])
         w_3.append(theta[3, 0])
         w_4.append(theta[4, 0])
         likelihood_history.append(likelihood)
@@ -97,6 +97,7 @@ while len(cols) < len(ponderi):
         if val[0] > maxx:
             maxx = val[0]
             index = ind
+    print(index)
     ponderi[index][0] = -inf
     values.append(maxx)
     cols.append(data.columns[index])

@@ -77,7 +77,11 @@ def read_csv():
 
 
 def delete_rows_with_missing_categoric_value(data):
-    categorical_columns = ['Type of Ownership', 'PPH Performance Categorization', 'State', 'City/Town', 'Offers Nursing Care Services', 'Offers Physical Therapy Services', 'Offers Occupational Therapy Services', 'Offers Speech Pathology Services', 'Offers Medical Social Services', 'Offers Home Health Aide Services', 'Quality of patient care star rating']
+    categorical_columns = ['Type of Ownership', 'PPH Performance Categorization', 'State', 'City/Town',
+                           'Offers Nursing Care Services', 'Offers Physical Therapy Services',
+                           'Offers Occupational Therapy Services', 'Offers Speech Pathology Services',
+                           'Offers Medical Social Services', 'Offers Home Health Aide Services',
+                           'Quality of patient care star rating']
     missing_values = data[categorical_columns].eq("-").any(axis=1)
     filtered_data = data[~missing_values]
     return filtered_data

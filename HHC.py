@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import pointbiserialr
 from math import sqrt
+from scipy.stats import pointbiserialr
+from math import sqrt
 from sklearn.model_selection import cross_val_score
 from sklearn import svm
 import time
@@ -190,7 +192,11 @@ def read_csv():
 
 
 def delete_rows_with_missing_categoric_value(data):
-    categorical_columns = ['Type of Ownership', 'PPH Performance Categorization', 'State', 'City/Town']
+    categorical_columns = ['Type of Ownership', 'PPH Performance Categorization', 'State', 'City/Town',
+                           'Offers Nursing Care Services', 'Offers Physical Therapy Services',
+                           'Offers Occupational Therapy Services', 'Offers Speech Pathology Services',
+                           'Offers Medical Social Services', 'Offers Home Health Aide Services',
+                           'Quality of patient care star rating']
     missing_values = data[categorical_columns].eq("-").any(axis=1)
     filtered_data = data[~missing_values]
     return filtered_data
@@ -225,6 +231,7 @@ def complete_data_with_mean(data):
             else:
                 mean_value = compute_mean_value_for_column(data, column_name)
                 data[column_name] = data[column_name].replace("-", mean_value)
+                data[column_name] = data[column_name].fillna(mean_value)
     return data
 
 
@@ -264,15 +271,6 @@ def data_analysis(data):
     summary_df.plot(kind='bar')
     plt.title('Mean and median values')
     plt.savefig('means_and_medians.png')
-    plt.clf()
-    columns_len = len(df.columns)
-    selected_columns = df.columns[columns_len-11:columns_len]
-    mean_values = df[selected_columns].mean()
-    median_values = df[selected_columns].median()
-    summary_df = pd.DataFrame({'Mean': mean_values, 'Median': median_values})
-    summary_df.plot(kind='bar')
-    plt.title('Mean and median values for categorical parameters')
-    plt.savefig('mean_median_categorical.png')
     plt.clf()
     categories = list(states_rating.keys())
     values = list(states_rating.values())

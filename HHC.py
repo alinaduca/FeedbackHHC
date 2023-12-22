@@ -160,9 +160,9 @@ def data_analysis(data):
     categories = list(states_rating.keys())
     values = list(states_rating.values())
     plt.bar(categories, values, color='blue')
-    plt.xlabel('Categories')
-    plt.ylabel('Values')
-    plt.title('Histogram')
+    plt.xlabel('States')
+    plt.ylabel('Star rating')
+    plt.title('Average star rating of each state')
     plt.savefig('ratings.png')
 
 

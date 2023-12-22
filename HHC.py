@@ -95,11 +95,13 @@ def CBFS(data):
                 visited.append( temp_subset )
                 merit = getMerit(temp_subset, label, df)
                 queue.push(temp_subset, merit)
+    #the printing            
     print("Best features according to CBFS")
     for feature in best_subset:
         print(feature)
     return best_subset
-
+    #the printing is done
+    
 def getMerit(subset, label, data):
     k = len(subset)
 

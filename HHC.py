@@ -12,25 +12,6 @@ import copy
 
 states_rating = {}
 
-    
-def getMerit(subset, label, data):
-    k = len(subset)
-
-    # average feature-class correlation
-    rcf_all = []
-    for feature in subset:
-        coeff = pointbiserialr( data[label], data[feature] )
-        rcf_all.append( abs( coeff.correlation ) )
-    rcf = np.mean( rcf_all )
-
-    # average feature-feature correlation
-    corr = data[data[subset].duplicated(keep=False)].corr()
-    corr.values[np.tril_indices_from(corr.values)] = np.nan
-    corr = abs(corr)
-    rff = corr.unstack().mean()
-
-    return (k * rcf) / sqrt(k + k * (k-1) * rff)
-
 def select_relevant_features(data):
     columns_to_drop = ['Provider Name', 'CMS Certification Number (CCN)', 'Address', 'ZIP Code', 'Telephone Number',
                        'Certification Date', 'DTC Performance Categorization', 'PPR Performance Categorization']

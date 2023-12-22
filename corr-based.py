@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import pointbiserialr
+from scipy.stats import pearsonr
 from math import sqrt
 
 
@@ -36,7 +36,7 @@ def computeMerit(subset, label):
     n = len(subset)
     rcf = []
     for feature in subset:
-        coefficient = pointbiserialr(data[label], data[feature])
+        coefficient = pearsonr(data[label], data[feature])
         rcf.append(abs(coefficient.correlation))
     rcf_mean = np.mean(rcf)
     correlation = data[subset].corr()
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     best_val = -1
     best_feature = ''
     for feature in features:
-        coefficient = pointbiserialr(data[label], data[feature])
+        coefficient = pearsonr(data[label], data[feature])
         coefficient = abs(coefficient.correlation)
         if coefficient > best_val:
             best_val = coefficient
@@ -89,5 +89,6 @@ if __name__ == '__main__':
                     visited.append(temp_subset)
                     merit = computeMerit(temp_subset, label)
                     queue.push(temp_subset, merit)
+    print(best_subset)
     output_data = data[best_subset]
     output_data.to_csv('corr-based.csv', index=False)

@@ -1,9 +1,122 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.stats import pointbiserialr
+from math import sqrt
+from sklearn.model_selection import cross_val_score
+from sklearn import svm
+import time
+import copy
 
 states_rating = {}
 
+class PriorityQueue:
+    def  __init__(self):
+        self.queue = []
+
+    def isEmpty(self):
+        return len(self.queue) == 0
+    
+    def push(self, item, priority):
+        """
+        item already in priority queue with smaller priority:
+        -> update its priority
+        item already in priority queue with higher priority:
+        -> do nothing
+        if item not in priority queue:
+        -> push it
+        """
+        for index, (i, p) in enumerate(self.queue):
+            if (set(i) == set(item)):
+                if (p >= priority):
+                    break
+                del self.queue[index]
+                self.queue.append( (item, priority) )
+                break
+        else:
+            self.queue.append( (item, priority) )
+        
+    def pop(self):
+        # return item with highest priority and remove it from queue
+        max_idx = 0
+        for index, (i, p) in enumerate(self.queue):
+            if (self.queue[max_idx][1] < p):
+                max_idx = index
+        (item, priority) = self.queue[max_idx]
+        del self.queue[max_idx]
+        return (item, priority)
+    
+def CBFS(data):
+    # name of the label (can be seen in the dataframe)
+    label = 'Quality of patient care star rating'
+
+    df = data
+    # list with feature names
+    features = df.columns.tolist()
+    features.remove(label)
+    df = df.replace([np.inf, -np.inf], np.nan)
+    df = df.dropna()
+
+    # change class labeling to 0 and 1
+    df[label] = np.where( df[label] > 0.01398, 1.0, 0.0) #that ugly number is aprox 3.2*
+    best_value = -1
+    best_feature = ''
+    for feature in features:  
+        coeff = pointbiserialr( df[label], df[feature] )
+        abs_coeff = abs( coeff.correlation )
+        if abs_coeff > best_value:
+            best_value = abs_coeff
+            best_feature = feature
+
+    queue = PriorityQueue()
+    queue.push([best_feature], best_value)
+    visited = []
+    n_backtrack = 0
+    max_backtrack = 5
+    while not queue.isEmpty():
+        subset, priority = queue.pop()
+
+        if (priority < best_value):
+            n_backtrack += 1
+        else:
+            best_value = priority
+            best_subset = subset
+
+        if (n_backtrack == max_backtrack):
+            break
+    
+        for feature in features:
+            temp_subset = subset + [feature]
+        
+            for node in visited:
+                if (set(node) == set(temp_subset)):
+                    break
+            else:
+                visited.append( temp_subset )
+                merit = getMerit(temp_subset, label, df)
+                queue.push(temp_subset, merit)
+    print("Best features according to CBFS")
+    for feature in best_subset:
+        print(feature)
+    return best_subset
+
+def getMerit(subset, label, data):
+    k = len(subset)
+
+    # average feature-class correlation
+    rcf_all = []
+    for feature in subset:
+        coeff = pointbiserialr( data[label], data[feature] )
+        rcf_all.append( abs( coeff.correlation ) )
+    rcf = np.mean( rcf_all )
+
+    # average feature-feature correlation
+    corr = data[data[subset].duplicated(keep=False)].corr()
+    corr.values[np.tril_indices_from(corr.values)] = np.nan
+    corr = abs(corr)
+    rff = corr.unstack().mean()
+
+    return (k * rcf) / sqrt(k + k * (k-1) * rff)
 
 def select_relevant_features(data):
     columns_to_drop = ['Provider Name', 'CMS Certification Number (CCN)', 'Address', 'ZIP Code', 'Telephone Number',
@@ -170,6 +283,7 @@ def data_analysis(data):
 
 if __name__ == '__main__':
     preprocessed_data = preprocessing()
+    CBFS_best_subset = CBFS(data = copy.deepcopy(preprocessed_data))
 
     '''
     final_column_names = preprocessed_data.columns.tolist()

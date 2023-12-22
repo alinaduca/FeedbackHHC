@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import pointbiserialr
+from scipy.stats import pearsonr
 from math import sqrt
 
 
@@ -37,7 +37,7 @@ def computeMerit(subset, label):
 
     rcf = []
     for feature in subset:
-        coefficient = pointbiserialr(data[label], data[feature])
+        coefficient = pearsonr(data[label], data[feature])
         rcf.append(abs(coefficient.correlation))
     rcf_mean = np.mean(rcf)
 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     best_val = -1
     best_feature = ''
     for feature in features:
-        coefficient = pointbiserialr(data[label], data[feature])
+        coefficient = pearsonr(data[label], data[feature])
         coefficient = abs(coefficient.correlation)
 
         if coefficient > best_val:

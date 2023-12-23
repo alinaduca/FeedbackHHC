@@ -1,14 +1,6 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.stats import pointbiserialr
-from math import sqrt
-from scipy.stats import pointbiserialr
-from math import sqrt
-from sklearn.model_selection import cross_val_score
-from sklearn import svm
-import time
-import copy
 
 states_rating = {}
 
@@ -116,8 +108,6 @@ def complete_data_with_mean(data):
                 indexes = data[data[column_name] == "-"].index.values
                 for index in indexes:
                     data.at[index, 'Quality of patient care star rating'] = custom_round(states_rating[data['State'][index]])
-                # selected_rows = data[data['State'].str.lower() == data[column_name].str.lower()]
-                # mean_value = compute_mean_value_for_column(selected_rows, column_name)
             else:
                 mean_value = compute_mean_value_for_column(data, column_name)
                 data[column_name] = data[column_name].replace("-", mean_value)
@@ -144,7 +134,6 @@ def preprocessing():
     data = complete_data_with_mean(data)
 
     data_encoded = pd.get_dummies(data, columns=['Type of Ownership', 'PPH Performance Categorization'])  # one-hot
-    # data_encoded.to_csv("data_before_normalization.csv", index=False)
     data_normalized = normalize_booleans(data_encoded)
     data_normalized = encode_columns_to_numeric(data_normalized, columns=['State', 'City/Town'])  # dictionary
     data_normalized = normalize_data_custom(data_normalized)

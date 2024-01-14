@@ -89,6 +89,7 @@ if __name__ == '__main__':
                     visited.append(temp_subset)
                     merit = computeMerit(temp_subset, label)
                     queue.push(temp_subset, merit)
-    print(best_subset)
+    # print(best_subset)
+    best_subset.append('Quality of patient care star rating')
     output_data = data[best_subset]
     output_data.to_csv('corr-based.csv', index=False)

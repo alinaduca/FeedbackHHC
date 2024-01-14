@@ -79,6 +79,6 @@ class NeuralNetwork:
         predictions = []
         for row in data:
             output = self.forward_propagation(row).tolist()
-            ans = output.index(max(output))
+            ans = output.index(max(output)) + 1
             predictions.append(ans)
         return predictions

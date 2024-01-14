@@ -1,8 +1,5 @@
-import numpy as np
 import pandas as pd
 from neural_network import NeuralNetwork
-from matplotlib import pyplot as plt
-from math import sqrt, inf
 
 
 def read_csv(file_path):
@@ -21,7 +18,7 @@ def main():
     layer_config = [8, 7, 6]
     learning_rate = 0.2
     network = NeuralNetwork(input_size, layer_config, learning_rate)
-    network.train(data.values, epochs=1)  # Adjust the number of epochs as needed
+    network.train(data.values, epochs=1)
     predictions = network.predict(data.values)
     print("Predictions:", predictions)
 

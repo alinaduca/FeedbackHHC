@@ -16,14 +16,12 @@ class NeuralNetwork:
 
     def forward_propagation(self, inputs):
         for layer in self.network:
-            outputs = []  # outputs of the current layer
             local_weights = []
             for neuron in layer:
                 weights = neuron['weights']
                 for i in range(len(weights) - 1):
                     neuron['output'] += weights[i] * inputs[i]
                 local_weights.append(neuron['output'])
-                # print(neuron['output'])
             local_weights = softmax(local_weights)
             for index, neuron in enumerate(layer):
                 neuron['output'] = local_weights[index]
@@ -81,10 +79,6 @@ class NeuralNetwork:
         predictions = []
         for row in data:
             output = self.forward_propagation(row).tolist()
-            print("Output:")
-            print(output)
             ans = output.index(max(output))
-            print("Ans:")
-            print(ans)
             predictions.append(ans)
         return predictions

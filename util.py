@@ -2,33 +2,14 @@ import numpy as np
 import math
 
 
-# def sigmoid(x):
-#     return 1.0 / (1.0 + math.exp(-x))
-
-# def softmax(x):  # x -> vector de scoruri, buna pentru a calcula "cea mai importanta" valoare
-#     exp_values = np.exp(x - np.max(x, axis=1, keepdims=True))
-#     return exp_values / np.sum(exp_values, axis=1, keepdims=True)
-
-# def softmax(x):
-#     exps = np.exp(x)
-#     return exps / np.sum(exps)
-
 def softmax(x):
     nr = np.exp(x)
-    # exp_x = np.exp(x - np.max(x, axis=-1, keepdims=True))  # Subtracting max(x) for numerical stability
-    # return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
     return nr / np.sum(nr)
 
 
 def softmax_derivative(output):
-    # Derivative of softmax function with respect to the input
-    # The output parameter is the output of the softmax function
     s = output.reshape(-1, 1)
     return np.diagflat(s) - np.dot(s, s.T)
-
-
-# def sigmoid_derivative(x):
-#     return x * (1 - x)
 
 
 def mean_squared_error(predictions, targets):

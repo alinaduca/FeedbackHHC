@@ -13,7 +13,7 @@ def read_csv(file_path):
 
 
 def main():
-    data = read_csv("corr-based.csv")
+    data = read_csv("Tema2/corr-based.csv")
     input_size = 7
     layer_config = [8, 7, 6]
     learning_rate = 0.2

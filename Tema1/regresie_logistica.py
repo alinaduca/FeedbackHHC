@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from math import sqrt, inf
+from math import inf
 
 
 def read_csv(file_path):

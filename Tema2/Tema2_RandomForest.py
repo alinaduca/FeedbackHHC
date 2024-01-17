@@ -1,8 +1,7 @@
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
-
-from FeedbackHHC.RandomForest import RandomForestRegressorCustom
+from RandomForest import RandomForestRegressorCustom
 
 
 def read_csv(file_path='corr-based.csv'):

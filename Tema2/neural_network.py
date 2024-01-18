@@ -1,4 +1,5 @@
 import numpy as np
+import csv
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
@@ -79,31 +80,25 @@ class Network:
     def predict(self, input_data):
         samples = len(input_data)
         result = []
-
         for i in range(samples):
             output = input_data[i]
             for layer in self.layers:
                 output = layer.forward_propagation(output)
             result.append(output)
-
         return result
 
     # train the network
     def fit(self, x_train, y_train, epochs, learning_rate):
         samples = len(x_train)
-
         for i in range(epochs):
             displayerr = 0
             for j in range(samples):
                 output = x_train[j]
                 for layer in self.layers:
                     output = layer.forward_propagation(output)
-
                 displayerr += self.loss(y_train[j], output)
                 self.errlist.append(displayerr)
-
                 error = self.loss_deriv(y_train[j], output)
-
                 for layer in reversed(self.layers):
                     error = layer.backward_propagation(error, learning_rate)
 
@@ -115,7 +110,7 @@ class Network:
 
 
 if __name__ == '__main__':
-    data = np.loadtxt('corr-based.csv', delimiter=',', dtype=float)
+    data = np.genfromtxt('corr-based.csv', delimiter=',', skip_header=1)
     train, test = train_test_split(data, test_size=0.4)
 
     xtrain = train[:, :-1].reshape(train[:, :-1].shape[0], 1, 7)
@@ -147,3 +142,10 @@ if __name__ == '__main__':
     plt.plot([x for x in range(len(testerrlist))], testerrlist)
     plt.savefig('testerror.png')
     plt.close()
+
+    with open("predictions_NeuralNetwork.csv", mode='w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(["How often patients got better at walking or moving around", "How often patients got better at taking their drugs correctly by mouth", "How often patients got better at bathing", "How often the home health team began their patients care in a timely manner", "How often patients breathing improved", "How often home health patients had to be admitted to the hospital", "How often patients got better at getting in and out of bed", "Quality of patient care star rating", "Predicted Values"])
+        for i in range(len(xtest)):
+            combined_row = np.concatenate((xtest[i].reshape(-1), ytest[i], out[i][0]))
+            csv_writer.writerow(combined_row)

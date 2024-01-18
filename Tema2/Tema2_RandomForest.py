@@ -1,46 +1,9 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
-import numpy as np
-from graphics import *
-from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, mean_squared_error, \
-    ConfusionMatrixDisplay, recall_score, precision_score, f1_score
-from RandomForest import RandomForestRegressorCustom
-import matplotlib.pyplot as plt
 
 
 def read_csv(file_path='corr-based.csv'):
     data = pd.read_csv(file_path)
     return data
-
-
-def calculate_accuracy(values, predictions):
-    misclassif = 0
-    for i in range(len(values)):
-        if values[i] != predictions[i]:
-            misclassif += 1
-    return (len(values) - misclassif) / len(values)
-
-
-def custom_round_decimal(value):
-    value *= 5
-    integer_part = int(value)
-    decimal_part = value - integer_part
-    if decimal_part < 0.25:
-        return integer_part * 1.0
-    elif decimal_part < 0.75:
-        return integer_part + 0.5
-    else:
-        return (integer_part + 1) * 1.0
-
-
-def custom_round(value):
-    value *= 5
-    integer_part = int(value)
-    decimal_part = value - integer_part
-    if decimal_part < 0.5:
-        return integer_part
-    else:
-        return integer_part + 1
 
 
 def split_dataset(dataset, test_size=0.2, random_state=None):
@@ -105,21 +68,3 @@ if __name__ == '__main__':
     #     file.write("mse2: " + str(mse2) + "\n")
     #     file.write("mse3: " + str(mse3) + "\n")
 
-    predicted_dataset = read_csv("predictions_RandomForest_1_100.csv")
-    true_values = predicted_dataset['Quality of patient care star rating']
-    predicted_values = predicted_dataset['Predicted Values']
-    predicted_values = predicted_values.apply(custom_round)
-    true_values = true_values.apply(custom_round)
-    cm = confusion_matrix(true_values, predicted_values)
-    ConfusionMatrixDisplay(confusion_matrix=cm).plot()
-    plt.savefig('confusion_matrix_RandomForest1_100.png')
-
-    # Accuracy
-    accuracy = calculate_accuracy(true_values, predicted_values)
-    recall = recall_score(true_values, predicted_values, average='weighted')
-    precision = precision_score(true_values, predicted_values, average='weighted')
-    # accuracy_sklearn = accuracy_score(true_values, predicted_values)
-    f1 = f1_score(true_values, predicted_values, average='weighted')
-    # report = classification_report(true_values, predicted_values)
-    write_metrics_to_csv("PerformanceMetrics_RandomForest_1_100.csv", ["Accuracy", "Precision", "Recall", "F1 Score"],
-                         [accuracy, precision, recall, f1])

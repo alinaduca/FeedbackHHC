@@ -8,7 +8,7 @@ from RandomForest import RandomForestRegressorCustom
 import matplotlib.pyplot as plt
 
 
-def read_csv(file_path='corr-based.csv'):
+def read_csv(file_path='../corr-based.csv'):
     data = pd.read_csv(file_path)
     return data
 
@@ -43,7 +43,17 @@ def split_dataset(dataset, test_size=0.2, random_state=None):
 if __name__ == '__main__':
     dataset = read_csv()
     X_train, X_test, y_train, y_test = split_dataset(dataset)
-    
+
+    '''
+    X_test_first_5 = X_test.head(5)
+    y_test_first_5 = y_test.head(5)
+    custom_rf = RandomForestRegressorCustom(n_trees=3, max_depth=5, min_samples_split=2)
+    custom_rf.fit(X_train, y_train)
+    y_pred_first_5 = custom_rf.predict(X_test_first_5)
+    print("Predictions for the first 5 rows:", y_pred_first_5)
+    '''
+
+
     custom_rf = RandomForestRegressorCustom(n_trees=1, max_depth=100, min_samples_split=2)
     custom_rf.fit(X_train, y_train)
     y_pred = custom_rf.predict(X_test)
@@ -84,3 +94,4 @@ if __name__ == '__main__':
     cm = confusion_matrix(true_values, predicted_values)
     ConfusionMatrixDisplay(confusion_matrix=cm).plot()
     plt.savefig('confusion_matrix.png')
+

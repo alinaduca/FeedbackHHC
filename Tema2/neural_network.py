@@ -111,12 +111,22 @@ class Network:
 
 if __name__ == '__main__':
     data = np.genfromtxt('corr-based.csv', delimiter=',', skip_header=1)
-    train, test = train_test_split(data, test_size=0.4)
+    # train, test = train_test_split(data, test_size=0.4)
 
-    xtrain = train[:, :-1].reshape(train[:, :-1].shape[0], 1, 7)
-    ytrain = train[:, -1:]
-    xtest = test[:, :-1].reshape(test[:, :-1].shape[0], 1, 7)
-    ytest = test[:, -1:]
+    # xtrain = train[:, :-1].reshape(train[:, :-1].shape[0], 1, 7)
+    # ytrain = train[:, -1:]
+    # xtest = test[:, :-1].reshape(test[:, :-1].shape[0], 1, 7)
+    # ytest = test[:, -1:]
+
+    test_data = np.genfromtxt('predictions_RandomForest_1_100.csv', delimiter=',', skip_header=1)
+    test_data = test_data[:, :-1]
+    xtest = test_data[:, :-1].reshape(test_data[:, :-1].shape[0], 1, 7)
+    ytest = test_data[:, -1:]
+
+    indices_train_data = np.setdiff1d(np.arange(len(data)), np.arange(len(test_data)))
+    train_data = data[indices_train_data]
+    xtrain = train_data[:, :-1].reshape(train_data[:, :-1].shape[0], 1, 7)
+    ytrain = train_data[:, -1:]
 
     net = Network()
     net.add(Layer(7, 50))

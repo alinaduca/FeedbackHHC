@@ -18,10 +18,8 @@ class RandomForestRegressorCustom:
 
     def predict(self, X):
         predictions = np.zeros(len(X))
-
         for tree in self.trees:
             predictions += tree.predict(X)
-
         return predictions / self.n_trees
 
 
@@ -44,34 +42,27 @@ class DecisionTreeRegressorCustom:
             print(f"Leaf Node: Depth={depth}, Value={np.mean(y)}")
             self.tree = {'value': np.mean(y)}  # Set self.tree for leaf nodes
             return self.tree
-
         left_mask = X.loc[:, best_index] <= best_value
         right_mask = ~left_mask
 
         print(f"Split Node: Depth={depth}, Feature={best_index}, Value={best_value}")
         left_subtree = self.fit(X[left_mask], y[left_mask], depth + 1)
         right_subtree = self.fit(X[right_mask], y[right_mask], depth + 1)
-
         self.tree = {'index': best_index, 'value': best_value, 'left': left_subtree, 'right': right_subtree}
         return self.tree
 
     def find_best_split(self, X, y):
         best_index, best_value, best_mse = None, None, float('inf')
-
         for i in X.columns:
             values = X[i].unique()
             for value in values:
                 left_mask = X[i] <= value
                 right_mask = ~left_mask
-
                 if len(y[left_mask]) < self.min_samples_split or len(y[right_mask]) < self.min_samples_split:
                     continue
-
                 mse = self.calculate_mse(y[left_mask]) + self.calculate_mse(y[right_mask])
-
                 if mse < best_mse:
                     best_index, best_value, best_mse = i, value, mse
-
         return best_index, best_value
 
     def calculate_mse(self, y):

@@ -35,6 +35,13 @@ def calculate_accuracy(values, predictions):
     return (len(values) - misclassif) / len(values)
 
 
+def transform_categorical(value):
+    if value * 5 < 2.5:
+        return 0
+    else:
+        return 1
+
+
 def custom_round_decimal(value):
     value *= 5
     integer_part = int(value)
@@ -75,7 +82,7 @@ def generate_ROC(y_test, y_probs_rf, y_probs_nn):
     plt.ylabel('True Positive Rate')
     plt.title('Receiver Operating Characteristic (ROC) Curve')
     plt.legend(loc='lower right')
-    plt.show()
+    plt.savefig("ROC_curve.png")
 
 
 if __name__ == "__main__":
@@ -84,9 +91,10 @@ if __name__ == "__main__":
     predicted_values_nn = predicted_dataset_nn['Predicted Values']
     true_values = predicted_dataset['Quality of patient care star rating']
     predicted_values = predicted_dataset['Predicted Values']
-    generate_ROC(true_values, predicted_values, predicted_values_nn)
+    generate_ROC(true_values.apply(transform_categorical), predicted_values.apply(transform_categorical), predicted_values_nn.apply(transform_categorical))
     predicted_values = predicted_values.apply(custom_round)
     true_values = true_values.apply(custom_round)
+    predicted_values_nn = predicted_values_nn.apply(custom_round)
     cm = confusion_matrix(true_values, predicted_values)
     ConfusionMatrixDisplay(confusion_matrix=cm).plot()
     plt.savefig('confusion_matrix_RandomForest1_100.png')

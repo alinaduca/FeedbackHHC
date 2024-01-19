@@ -36,7 +36,7 @@ if __name__ == '__main__':
     print("Predictions for the first 5 rows:", y_pred_first_5)
     '''
 
-    # custom_rf = RandomForestRegressorCustom(n_trees=3, max_depth=5, min_samples_split=2)
+    # custom_rf = RandomForestRegressorCustom(n_trees=1, max_depth=100, min_samples_split=2)
     # custom_rf.fit(X_train, y_train)
     # y_pred = custom_rf.predict(X_test)
     # mse1 = mean_squared_error(y_test, y_pred)
@@ -54,13 +54,13 @@ if __name__ == '__main__':
     # csvfile_path = "predictions_RandomForest_100_100.csv"
     # write_to_csv(csvfile_path, dataset.columns.tolist(), X_test, y_test, y_pred)
     #
-    # custom_rf = RandomForestRegressorCustom(n_trees=100, max_depth=None, min_samples_split=2)
+    # custom_rf = RandomForestRegressorCustom(n_trees=100, max_depth=50, min_samples_split=2)
     # custom_rf.fit(X_train, y_train)
     # y_pred = custom_rf.predict(X_test)
     # mse3 = mean_squared_error(y_test, y_pred)
     # print("Mean Squared Error3:", mse3)
     # print(y_pred)
-    # csvfile_path = "predictions_RandomForest_100_None.csv"
+    # csvfile_path = "predictions_RandomForest_100_50.csv"
     # write_to_csv(csvfile_path, dataset.columns.tolist(), X_test, y_test, y_pred)
     #
     # with open('mse_values.txt', 'w') as file:

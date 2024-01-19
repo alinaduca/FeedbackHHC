@@ -1,4 +1,6 @@
 import pandas as pd
+from graphics import write_to_csv
+from RandomForest import RandomForestRegressorCustom
 
 
 def read_csv(file_path='corr-based.csv'):
@@ -36,15 +38,12 @@ if __name__ == '__main__':
     print("Predictions for the first 5 rows:", y_pred_first_5)
     '''
 
-    # custom_rf = RandomForestRegressorCustom(n_trees=1, max_depth=100, min_samples_split=2)
-    # custom_rf.fit(X_train, y_train)
-    # y_pred = custom_rf.predict(X_test)
-    # mse1 = mean_squared_error(y_test, y_pred)
-    # print("Mean Squared Error1:", mse1)
-    # print(y_pred)
-    # csvfile_path = "predictions_RandomForest_1_100.csv"
-    # write_to_csv(csvfile_path, dataset.columns.tolist(), X_test, y_test, y_pred)
-    #
+    custom_rf = RandomForestRegressorCustom(n_trees=50, max_depth=100, min_samples_split=2)
+    custom_rf.fit(X_train, y_train)
+    y_pred = custom_rf.predict(X_test)
+    csvfile_path = "predictions_RandomForest_1_100.csv"
+    write_to_csv(csvfile_path, dataset.columns.tolist(), X_test, y_test, y_pred)
+
     # custom_rf = RandomForestRegressorCustom(n_trees=100, max_depth=100, min_samples_split=2)
     # custom_rf.fit(X_train, y_train)
     # y_pred = custom_rf.predict(X_test)
@@ -62,9 +61,3 @@ if __name__ == '__main__':
     # print(y_pred)
     # csvfile_path = "predictions_RandomForest_100_50.csv"
     # write_to_csv(csvfile_path, dataset.columns.tolist(), X_test, y_test, y_pred)
-    #
-    # with open('mse_values.txt', 'w') as file:
-    #     file.write("mse1: " + str(mse1) + "\n")
-    #     file.write("mse2: " + str(mse2) + "\n")
-    #     file.write("mse3: " + str(mse3) + "\n")
-

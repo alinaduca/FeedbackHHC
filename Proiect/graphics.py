@@ -36,18 +36,6 @@ def transform_categorical(value):
         return 1
 
 
-def custom_round_decimal(value):
-    value *= 5
-    integer_part = int(value)
-    decimal_part = value - integer_part
-    if decimal_part < 0.25:
-        return integer_part * 1.0
-    elif decimal_part < 0.75:
-        return integer_part + 0.5
-    else:
-        return (integer_part + 1) * 1.0
-
-
 def custom_round(value):
     value *= 5
     integer_part = int(value)
@@ -114,3 +102,29 @@ if __name__ == "__main__":
     write_metrics_to_csv("PerformanceMetrics_NeuralNetwork_sklearn.csv",
                          ["Accuracy", "Precision", "Recall", "F1 Score", "Mean Squared Error"],
                          [accuracy_nn, precision_nn, recall_nn, f1_nn, mse_nn])
+
+    misclassified_instances_by_nn = []
+    misclassified_instances_by_rf = []
+
+    for i in range(len(predicted_dataset_rf.values)):
+        instance_rf = predicted_dataset_rf.values[i]
+        instance_nn = predicted_dataset_nn.values[i]
+        instance_rf[-2] = instance_nn[-2] = custom_round(instance_rf[-2])
+        predicted_dataset_rf.values[i] = instance_rf
+        predicted_dataset_nn.values[i] = instance_nn
+        if instance_rf[-2] != instance_rf[-1]:
+            misclassified_instances_by_rf.append(instance_rf)
+        if instance_nn[-2] != instance_nn[-1]:
+            misclassified_instances_by_nn.append(instance_nn)
+
+    with open("Misclassified_RF.csv", mode='w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(predicted_dataset_rf.columns.to_list())
+        for i in range(len(misclassified_instances_by_rf)):
+            csv_writer.writerow(misclassified_instances_by_rf[i])
+
+    with open("Misclassified_NN.csv", mode='w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(predicted_dataset_nn.columns.to_list())
+        for i in range(len(misclassified_instances_by_nn)):
+            csv_writer.writerow(misclassified_instances_by_nn[i])

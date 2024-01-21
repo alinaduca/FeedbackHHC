@@ -16,6 +16,16 @@ def read_csv(file_path='corr-based.csv'):
     return data
 
 
+def custom_round(value):
+    value *= 5
+    integer_part = int(value)
+    decimal_part = value - integer_part
+    if decimal_part < 0.5:
+        return integer_part
+    else:
+        return integer_part + 1
+
+
 def split_dataset(dataset, test_size=0.2, random_state=None):
     y_column = dataset.columns[-1]
     X = dataset.drop(y_column, axis=1)
@@ -40,10 +50,10 @@ if __name__ == '__main__':
     rf = RandomForestRegressor()
     crf = rf.fit(X_train, y_train)
     y_pred = rf.predict(X_test)
-    y_pred = list(map(lambda element: round(element * 5), y_pred))
-    # write_to_csv("predictions_RandomForest_sklearn.csv", dataset.columns.tolist(), X_test, y_test, y_pred)
+    y_pred = list(map(lambda element: custom_round(element), y_pred))
+    write_to_csv("predictions_RandomForest_sklearn.csv", dataset.columns.tolist(), X_test, y_test, y_pred)
 
-    train2 = list(map(lambda element: round(element * 5), y_train))
+    train2 = list(map(lambda element: custom_round(element), y_train))
     cnn = MLPClassifier(random_state=1, max_iter=1000).fit(X_train, train2)
     y_pred = cnn.predict(X_test)
-    # write_to_csv("predictions_NeuralNetwork_sklearn.csv", dataset.columns.tolist(), X_test, y_test, y_pred)
+    write_to_csv("predictions_NeuralNetwork_sklearn.csv", dataset.columns.tolist(), X_test, y_test, y_pred)

@@ -66,6 +66,29 @@ def generate_ROC(y_test, y_probs_rf, y_probs_nn):
     plt.savefig("ROC_categorical.png")
 
 
+def visualize_misclassified_points(correct_points, misclassified_points, index_feature_1, index_feature_2, algorithm):
+    plt.clf()
+    if len(correct_points) == 0:
+        print("No correctly classified points.")
+    else:
+        # correct_features = [point[0] for point in correct_points]
+        plt.scatter([feature[index_feature_1] for feature in correct_points], [feature[index_feature_2] for feature in correct_points],
+                    c='black', marker='o', label='Correctly Classified')
+
+    if len(misclassified_points) == 0:
+        print("No misclassified points.")
+    else:
+        # misclassified_features = [point[0] for point in misclassified_points]
+        plt.scatter([feature[index_feature_1] for feature in misclassified_points],
+                    [feature[index_feature_2] for feature in misclassified_points], c='red', marker='x', label='Misclassified')
+    plt.xlabel('How often patients got better at walking or moving around')
+    plt.ylabel('How often patients got better at taking their drugs correctly by mouth')
+    plt.title('Classified Points')
+    plt.legend()
+    filename = 'visualize_misclassified_points' + algorithm + '.png'
+    plt.savefig(filename)
+
+
 if __name__ == "__main__":
     predicted_dataset_rf = pd.read_csv("predictions_RandomForest_sklearn.csv")
     predicted_dataset_nn = pd.read_csv("predictions_NeuralNetwork_sklearn.csv")
@@ -104,7 +127,9 @@ if __name__ == "__main__":
                          [accuracy_nn, precision_nn, recall_nn, f1_nn, mse_nn])
 
     misclassified_instances_by_nn = []
+    correct_instances_by_nn = []
     misclassified_instances_by_rf = []
+    correct_instances_by_rf = []
 
     for i in range(len(predicted_dataset_rf.values)):
         instance_rf = predicted_dataset_rf.values[i]
@@ -114,8 +139,12 @@ if __name__ == "__main__":
         predicted_dataset_nn.values[i] = instance_nn
         if instance_rf[-2] != instance_rf[-1]:
             misclassified_instances_by_rf.append(instance_rf)
+        else:
+            correct_instances_by_rf.append(instance_rf)
         if instance_nn[-2] != instance_nn[-1]:
             misclassified_instances_by_nn.append(instance_nn)
+        else:
+            correct_instances_by_nn.append(instance_nn)
 
     with open("Misclassified_RF.csv", mode='w', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
@@ -128,3 +157,6 @@ if __name__ == "__main__":
         csv_writer.writerow(predicted_dataset_nn.columns.to_list())
         for i in range(len(misclassified_instances_by_nn)):
             csv_writer.writerow(misclassified_instances_by_nn[i])
+
+    visualize_misclassified_points(correct_instances_by_rf, misclassified_instances_by_rf, 0, 1, "RF")
+    visualize_misclassified_points(correct_instances_by_nn, misclassified_instances_by_nn, 0, 1, "NN")

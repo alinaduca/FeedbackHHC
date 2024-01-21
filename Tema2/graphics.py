@@ -1,12 +1,7 @@
 import csv
 import pandas as pd
 from sklearn.metrics import roc_curve, auc
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neural_network import MLPClassifier
-import numpy as np
-from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, mean_squared_error, \
-    ConfusionMatrixDisplay, recall_score, precision_score, f1_score
+from sklearn.metrics import confusion_matrix, mean_squared_error, ConfusionMatrixDisplay, recall_score, precision_score, f1_score
 import matplotlib.pyplot as plt
 
 
@@ -20,7 +15,6 @@ def write_to_csv(csvfile_path, feature_names, X_test, y_test, y_pred):
 
 
 def write_metrics_to_csv(csvfile_path, metrics_names, metrics_score):
-    '''Performance metrics'''
     with open(csvfile_path, mode='w', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(metrics_names)

@@ -83,22 +83,20 @@ if __name__ == "__main__":
     predicted_dataset_nn = pd.read_csv("predictions_NeuralNetwork_sklearn.csv")
     predicted_values_nn = predicted_dataset_nn['Predicted Values']
     true_values = predicted_dataset_rf['Quality of patient care star rating']
+    true_values = true_values.apply(custom_round)
     predicted_values_rf = predicted_dataset_rf['Predicted Values']
     mse_rf = mean_squared_error(true_values, predicted_values_rf)
     mse_nn = mean_squared_error(true_values, predicted_values_nn)
 
     generate_ROC(true_values.apply(transform_categorical), predicted_values_rf.apply(transform_categorical), predicted_values_nn.apply(transform_categorical))
-    true_values = true_values.apply(custom_round)
-    predicted_values_rf = predicted_values_rf.apply(custom_round)
-    predicted_values_nn = predicted_values_nn.apply(custom_round)
     cm = confusion_matrix(true_values, predicted_values_rf)
     ConfusionMatrixDisplay(confusion_matrix=cm).plot()
-    plt.savefig('confusion_matrix_RandomForest50_100.png')
+    plt.savefig('confusion_matrix_RandomForest_sklearn.png')
 
     plt.clf()
     cmnn = confusion_matrix(true_values, predicted_values_nn)
     ConfusionMatrixDisplay(confusion_matrix=cmnn).plot()
-    plt.savefig('confusion_matrix_Neural.png')
+    plt.savefig('confusion_matrix_NeuralNetwork_sklearn.png')
 
     # accuracy_sklearn = accuracy_score(true_values, predicted_values)
     # report = classification_report(true_values, predicted_values)
@@ -106,13 +104,13 @@ if __name__ == "__main__":
     recall = recall_score(true_values, predicted_values_rf, average='weighted')
     precision = precision_score(true_values, predicted_values_rf, average='weighted')
     f1 = f1_score(true_values, predicted_values_rf, average='weighted')
-    write_metrics_to_csv("PerformanceMetrics_RandomForest_50_100.csv", ["Accuracy", "Precision", "Recall", "F1 Score", "Mean Squared Error"],
+    write_metrics_to_csv("PerformanceMetrics_RandomForest_sklearn.csv", ["Accuracy", "Precision", "Recall", "F1 Score", "Mean Squared Error"],
                          [accuracy, precision, recall, f1, mse_rf])
 
     accuracy_nn = calculate_accuracy(true_values, predicted_values_nn)
     recall_nn = recall_score(true_values, predicted_values_nn, average='weighted')
     precision_nn = precision_score(true_values, predicted_values_nn, average='weighted')
     f1_nn = f1_score(true_values, predicted_values_nn, average='weighted')
-    write_metrics_to_csv("PerformanceMetrics_NeuralNetwork.csv",
+    write_metrics_to_csv("PerformanceMetrics_NeuralNetwork_sklearn.csv",
                          ["Accuracy", "Precision", "Recall", "F1 Score", "Mean Squared Error"],
                          [accuracy_nn, precision_nn, recall_nn, f1_nn, mse_nn])

@@ -98,7 +98,7 @@ if __name__ == "__main__":
     plt.clf()
     cmnn = confusion_matrix(true_values, predicted_values_nn)
     ConfusionMatrixDisplay(confusion_matrix=cmnn).plot()
-    plt.savefig('confusion_matrix_Neural.png')
+    plt.savefig('confusion_matrix_NeuralNetwork.png')
 
     # accuracy_sklearn = accuracy_score(true_values, predicted_values)
     # report = classification_report(true_values, predicted_values)

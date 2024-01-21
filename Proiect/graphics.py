@@ -75,12 +75,12 @@ def generate_ROC(y_test, y_probs_rf, y_probs_nn):
     plt.ylabel('True Positive Rate')
     plt.title('Receiver Operating Characteristic (ROC) Curve')
     plt.legend(loc='lower right')
-    plt.savefig("ROC_curve.png")
+    plt.savefig("ROC_categorical.png")
 
 
 if __name__ == "__main__":
-    predicted_dataset_rf = pd.read_csv("predictions_RandomForest_50_100.csv")
-    predicted_dataset_nn = pd.read_csv("predictions_NeuralNetwork.csv")
+    predicted_dataset_rf = pd.read_csv("predictions_RandomForest_sklearn.csv")
+    predicted_dataset_nn = pd.read_csv("predictions_NeuralNetwork_sklearn.csv")
     predicted_values_nn = predicted_dataset_nn['Predicted Values']
     true_values = predicted_dataset_rf['Quality of patient care star rating']
     predicted_values_rf = predicted_dataset_rf['Predicted Values']

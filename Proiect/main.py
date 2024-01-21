@@ -1,5 +1,12 @@
+import numpy as np
 import pandas as pd
+from itertools import cycle
+import matplotlib.pyplot as plt
 from graphics import write_to_csv
+from sklearn.metrics import roc_auc_score
+from sklearn.metrics import auc, roc_curve
+from sklearn.metrics import RocCurveDisplay
+from sklearn.preprocessing import LabelBinarizer
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestRegressor
 
@@ -31,13 +38,12 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test = split_dataset(dataset)
 
     rf = RandomForestRegressor()
-    rf.fit(X_train, y_train)
+    crf = rf.fit(X_train, y_train)
     y_pred = rf.predict(X_test)
     y_pred = list(map(lambda element: round(element * 5), y_pred))
-    write_to_csv("predictions_RandomForest_sklearn.csv", dataset.columns.tolist(), X_test, y_test, y_pred)
+    # write_to_csv("predictions_RandomForest_sklearn.csv", dataset.columns.tolist(), X_test, y_test, y_pred)
 
     train2 = list(map(lambda element: round(element * 5), y_train))
-    clf = MLPClassifier(random_state=1, max_iter=1000).fit(X_train, train2)
-    y_pred = clf.predict(X_test)
-    write_to_csv("predictions_NeuralNetwork_sklearn.csv", dataset.columns.tolist(), X_test, y_test, y_pred)
-
+    cnn = MLPClassifier(random_state=1, max_iter=1000).fit(X_train, train2)
+    y_pred = cnn.predict(X_test)
+    # write_to_csv("predictions_NeuralNetwork_sklearn.csv", dataset.columns.tolist(), X_test, y_test, y_pred)

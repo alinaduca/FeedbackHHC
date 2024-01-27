@@ -16,10 +16,10 @@ def custom_round(value):
         return integer_part + 1
 
 
-data_rf = pd.read_csv("predictions_RandomForest_sklearn.csv")
+data_rf = pd.read_csv("corr-based/predictions_RandomForest_sklearn.csv")
 predicted_rf = data_rf["Predicted Values"]
 true_values = data_rf["Quality of patient care star rating"]
-data_nn = pd.read_csv("predictions_NeuralNetwork_sklearn.csv")
+data_nn = pd.read_csv("corr-based/predictions_NeuralNetwork_sklearn.csv")
 predicted_nn = data_nn["Quality of patient care star rating"]
 
 true_values = true_values.apply(custom_round)
@@ -64,4 +64,4 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title('Receiver Operating Characteristic for each class (RF vs NN)')
 plt.legend(loc="lower right")
-plt.savefig("ROC_per_label.png")
+plt.savefig("corr-based/ROC_per_label.png")

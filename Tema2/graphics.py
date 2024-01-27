@@ -79,7 +79,7 @@ def generate_ROC(y_test, y_probs_rf, y_probs_nn):
 
 
 if __name__ == "__main__":
-    predicted_dataset_rf = pd.read_csv("predictions_RandomForest_50_100.csv")
+    predicted_dataset_rf = pd.read_csv("predictions_RandomForest_100_100.csv")
     predicted_dataset_nn = pd.read_csv("predictions_NeuralNetwork.csv")
     predicted_values_nn = predicted_dataset_nn['Predicted Values']
     true_values = predicted_dataset_rf['Quality of patient care star rating']
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     predicted_values_nn = predicted_values_nn.apply(custom_round)
     cm = confusion_matrix(true_values, predicted_values_rf)
     ConfusionMatrixDisplay(confusion_matrix=cm).plot()
-    plt.savefig('confusion_matrix_RandomForest50_100.png')
+    plt.savefig('confusion_matrix_RandomForest100_100.png')
 
     plt.clf()
     cmnn = confusion_matrix(true_values, predicted_values_nn)
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     recall = recall_score(true_values, predicted_values_rf, average='weighted')
     precision = precision_score(true_values, predicted_values_rf, average='weighted')
     f1 = f1_score(true_values, predicted_values_rf, average='weighted')
-    write_metrics_to_csv("PerformanceMetrics_RandomForest_50_100.csv", ["Accuracy", "Precision", "Recall", "F1 Score", "Mean Squared Error"],
+    write_metrics_to_csv("PerformanceMetrics_RandomForest_100_100.csv", ["Accuracy", "Precision", "Recall", "F1 Score", "Mean Squared Error"],
                          [accuracy, precision, recall, f1, mse_rf])
 
     accuracy_nn = calculate_accuracy(true_values, predicted_values_nn)

@@ -56,12 +56,10 @@ if __name__ == '__main__':
     y_pred = list(map(lambda element: round(element * 5), y_pred))
     write_to_csv("predictions_RandomForest_sklearn.csv", dataset.columns.tolist(), X_test, y_test, y_pred)
 
-
     train2 = list(map(lambda element: round(element * 5), y_train))
     clf = MLPClassifier(random_state=1, max_iter=1000).fit(X_train, train2)
     y_pred = clf.predict(X_test)
     write_to_csv("predictions_NeuralNetwork_sklearn.csv", dataset.columns.tolist(), X_test, y_test, y_pred)
-
 
     # custom_rf = RandomForestRegressorCustom(n_trees=100, max_depth=100, min_samples_split=2)
     # custom_rf.fit(X_train, y_train)
@@ -71,7 +69,7 @@ if __name__ == '__main__':
     # print(y_pred)
     # csvfile_path = "predictions_RandomForest_100_100.csv"
     # write_to_csv(csvfile_path, dataset.columns.tolist(), X_test, y_test, y_pred)
-    #
+
     # custom_rf = RandomForestRegressorCustom(n_trees=100, max_depth=50, min_samples_split=2)
     # custom_rf.fit(X_train, y_train)
     # y_pred = custom_rf.predict(X_test)

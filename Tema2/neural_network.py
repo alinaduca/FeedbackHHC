@@ -1,7 +1,6 @@
 import numpy as np
 import csv
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 
 
 class Layer():
@@ -118,7 +117,7 @@ if __name__ == '__main__':
     # xtest = test[:, :-1].reshape(test[:, :-1].shape[0], 1, 7)
     # ytest = test[:, -1:]
 
-    test_data = np.genfromtxt('predictions_RandomForest_50_100.csv', delimiter=',', skip_header=1)
+    test_data = np.genfromtxt('predictions_RandomForest_100_100.csv', delimiter=',', skip_header=1)
     test_data = test_data[:, :-1]
     xtest = test_data[:, :-1].reshape(test_data[:, :-1].shape[0], 1, 7)
     ytest = test_data[:, -1:]

@@ -5,15 +5,6 @@ from sklearn.metrics import confusion_matrix, mean_squared_error, ConfusionMatri
 import matplotlib.pyplot as plt
 
 
-def write_to_csv(csvfile_path, feature_names, X_test, y_test, y_pred):
-    with open(csvfile_path, mode='w', newline='') as csvfile:
-        csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(feature_names + ['Predicted Values'])
-        for i in range(len(y_pred)):
-            row = [X_test.iloc[i][0], X_test.iloc[i][1], X_test.iloc[i][2], X_test.iloc[i][3], X_test.iloc[i][4], X_test.iloc[i][5], X_test.iloc[i][6], y_test.iloc[i], y_pred[i]]
-            csv_writer.writerow(row)
-
-
 def write_metrics_to_csv(csvfile_path, metrics_names, metrics_score):
     with open(csvfile_path, mode='w', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
@@ -71,7 +62,6 @@ def visualize_misclassified_points(correct_points, misclassified_points, index_f
     if len(correct_points) == 0:
         print("No correctly classified points.")
     else:
-        # correct_features = [point[0] for point in correct_points]
         plt.scatter([feature[index_feature_1] for feature in correct_points], [feature[index_feature_2] for feature in correct_points],
                     c='black', marker='o', label='Correctly Classified')
 
@@ -90,8 +80,8 @@ def visualize_misclassified_points(correct_points, misclassified_points, index_f
 
 
 if __name__ == "__main__":
-    predicted_dataset_rf = pd.read_csv("predictions_RandomForest_sklearn.csv")
-    predicted_dataset_nn = pd.read_csv("predictions_NeuralNetwork_sklearn.csv")
+    predicted_dataset_rf = pd.read_csv("corr-based/predictions_NeuralNetwork_sklearn.csv")
+    predicted_dataset_nn = pd.read_csv("corr-based/predictions_NeuralNetwork_sklearn.csv")
     predicted_values_nn = predicted_dataset_nn['Predicted Values']
     true_values = predicted_dataset_rf['Quality of patient care star rating']
     true_values = true_values.apply(custom_round)
@@ -115,14 +105,14 @@ if __name__ == "__main__":
     recall = recall_score(true_values, predicted_values_rf, average='weighted')
     precision = precision_score(true_values, predicted_values_rf, average='weighted')
     f1 = f1_score(true_values, predicted_values_rf, average='weighted')
-    write_metrics_to_csv("PerformanceMetrics_RandomForest_sklearn.csv", ["Accuracy", "Precision", "Recall", "F1 Score", "Mean Squared Error"],
+    write_metrics_to_csv("corr-based/PerformanceMetrics_RandomForest_sklearn.csv", ["Accuracy", "Precision", "Recall", "F1 Score", "Mean Squared Error"],
                          [accuracy, precision, recall, f1, mse_rf])
 
     accuracy_nn = calculate_accuracy(true_values, predicted_values_nn)
     recall_nn = recall_score(true_values, predicted_values_nn, average='weighted')
     precision_nn = precision_score(true_values, predicted_values_nn, average='weighted')
     f1_nn = f1_score(true_values, predicted_values_nn, average='weighted')
-    write_metrics_to_csv("PerformanceMetrics_NeuralNetwork_sklearn.csv",
+    write_metrics_to_csv("corr-based/PerformanceMetrics_NeuralNetwork_sklearn.csv",
                          ["Accuracy", "Precision", "Recall", "F1 Score", "Mean Squared Error"],
                          [accuracy_nn, precision_nn, recall_nn, f1_nn, mse_nn])
 
@@ -146,17 +136,16 @@ if __name__ == "__main__":
         else:
             correct_instances_by_nn.append(instance_nn)
 
-    with open("Misclassified_RF.csv", mode='w', newline='') as csvfile:
+    with open("corr-based/Misclassified_RF.csv", mode='w', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(predicted_dataset_rf.columns.to_list())
         for i in range(len(misclassified_instances_by_rf)):
             csv_writer.writerow(misclassified_instances_by_rf[i])
 
-    with open("Misclassified_NN.csv", mode='w', newline='') as csvfile:
+    with open("corr-based/Misclassified_NN.csv", mode='w', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(predicted_dataset_nn.columns.to_list())
         for i in range(len(misclassified_instances_by_nn)):
             csv_writer.writerow(misclassified_instances_by_nn[i])
-
     visualize_misclassified_points(correct_instances_by_rf, misclassified_instances_by_rf, 0, 1, "RF")
     visualize_misclassified_points(correct_instances_by_nn, misclassified_instances_by_nn, 0, 1, "NN")
